@@ -9,9 +9,30 @@ Inspired by [@RoyVoetman/flysystem-gitlab-storage](https://github.com/RoyVoetman
 
 ## Usage
 
+```php
+<?php
+
+use Atomicptr\FlysystemGithub\GithubAdapter;
+use Atomicptr\FlysystemGithub\Credentials;
+use Atomicptr\FlysystemGithub\Committer;
+use League\Flysystem\Filesystem;
+
+$adapter = new GithubAdapter(
+    "username",
+    "repository",
+    branch: "master",
+    credentials: Credentials::fromToken("token..."),
+    committer: new Committer("Peter Developer", "peter@developer.tld"),
+);
+
+$filesystem = new Filesystem($adapter);
+
+// see http://flysystem.thephpleague.com/api/ for full list of available functionality
+```
+
 ### Laravel
 
-TODO
+Check out my other repository: [atomicptr/laravel-github-storage](https://github.com/atomicptr/laravel-github-storage)
 
 ## License
 
