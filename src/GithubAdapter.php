@@ -402,4 +402,13 @@ class GithubAdapter implements FilesystemAdapter, PublicUrlGenerator
                 throw new InvalidArgumentException("Unknown publicUrlCdn: $cdn");
         }
     }
+
+    /**
+     * Laravel checks if the adapter has a "getUrl" method and calls that instead of using publicUrl, so we implement
+     * this here directly instead :)
+     */
+    public function getUrl($path): string
+    {
+        return $this->publicUrl($path, new Config());
+    }
 }
