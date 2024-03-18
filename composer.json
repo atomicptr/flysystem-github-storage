@@ -1,11 +1,19 @@
 {
     "name": "atomicptr/flysystem-github-storage",
     "description": "A Github based filesystem for Flysystem.",
+    "keywords": [
+        "flysystem-github",
+        "flysystem",
+        "github",
+        "api",
+        "laravel-storage"
+    ],
     "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Atomicptr\\FlysystemGithubStorage\\": "src/"
+            "Atomicptr\\FlysystemGithub\\": "src/",
+            "Atomicptr\\FlysystemGithub\\Tests\\": "tests/"
         }
     },
     "authors": [

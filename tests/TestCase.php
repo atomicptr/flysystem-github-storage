@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Atomicptr\FlysystemGithub\Tests;
 
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
