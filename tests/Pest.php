@@ -1,5 +1,6 @@
 <?php
 
+use Atomicptr\FlysystemGithub\Credentials;
 use Atomicptr\FlysystemGithub\GithubAdapter;
 use Atomicptr\FlysystemGithub\Tests\TestCase;
 
@@ -7,8 +8,12 @@ uses(TestCase::class)->in('Feature');
 
 function createAdapter(): GithubAdapter
 {
+    $token = getenv('GITHUB_TOKEN') ? Credentials::fromToken(getenv('GITHUB_TOKEN')) : null;
+
     return new GithubAdapter(
         'atomicptr',
-        'atomicptr.dev',
+        'demo-storage',
+        credentials: $token,
+        branch: 'master',
     );
 }
