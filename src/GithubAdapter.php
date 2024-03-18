@@ -22,7 +22,6 @@ use League\Flysystem\UnableToListContents;
 use League\Flysystem\UnableToMoveFile;
 use League\Flysystem\UnableToReadFile;
 use League\Flysystem\UnableToRetrieveMetadata;
-use League\Flysystem\UnableToSetVisibility;
 use League\Flysystem\UnableToWriteFile;
 use League\Flysystem\UrlGeneration\PublicUrlGenerator;
 use League\MimeTypeDetection\ExtensionMimeTypeDetector;
@@ -230,12 +229,13 @@ class GithubAdapter implements FilesystemAdapter, PublicUrlGenerator
 
     public function setVisibility(string $path, string $visibility): void
     {
-        throw new UnableToSetVisibility('Github API does not support visibility.');
+        // Github API does not support visibility so we do nothing :)
     }
 
     public function visibility(string $path): FileAttributes
     {
-        throw new UnableToSetVisibility('Github API does not support visibility.');
+        // Github API does not support visibility so we do nothing :)
+        return new FileAttributes($path, null, 'public', null, null);
     }
 
     public function mimeType(string $path): FileAttributes
