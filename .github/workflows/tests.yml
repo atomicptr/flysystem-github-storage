@@ -11,6 +11,8 @@ jobs:
   tests:
     name: tests
     runs-on: ubuntu-latest
+    permissions:
+      repository-projects: write
     steps:
       - uses: actions/checkout@v3
         with:
