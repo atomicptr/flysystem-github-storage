@@ -1,0 +1,36 @@
+{
+    "name": "atomicptr/flysystem-github-storage",
+    "description": "A Github based filesystem for Flysystem.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Atomicptr\\FlysystemGithubStorage\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Christopher Kaster",
+            "email": "me@atomicptr.de"
+        }
+    ],
+    "require": {
+      "php": "^8.2",
+      "league/flysystem": "^3",
+        "knplabs/github-api": "^3.0",
+        "symfony/http-client": "^7.0",
+        "nyholm/psr7": "^1.8",
+        "guzzlehttp/guzzle": "^7"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true,
+            "pestphp/pest-plugin": true
+        }
+    },
+    "require-dev": {
+        "league/flysystem-adapter-test-utilities": "^3.21",
+        "pestphp/pest": "^2.34",
+        "laravel/pint": "^1.14"
+    }
+}
