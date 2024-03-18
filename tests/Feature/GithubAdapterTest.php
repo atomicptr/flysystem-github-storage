@@ -53,6 +53,31 @@ test('write/delete: create file src/test.rs, read it and delete it again', funct
     expect($adapter->fileExists('src/test.rs'))->toBeFalse();
 });
 
+test('writeStream/readStream: create a file using streams and read it', function () {
+    $adapter = createAdapter();
+
+    if ($adapter->fileExists('stream')) {
+        $adapter->delete('stream');
+    }
+
+    $string = 'this is a test string';
+
+    $stream = fopen('php://memory', 'r+');
+    fwrite($stream, $string);
+    rewind($stream);
+    $adapter->writeStream('stream', $stream, new Config());
+    fclose($stream);
+
+    $data = $adapter->read('stream');
+    expect($data)->toBe($string);
+
+    $stream = $adapter->readStream('stream');
+    $data = stream_get_contents($stream);
+    expect($data)->toBe($string);
+
+    $adapter->delete('stream');
+});
+
 test('directoryExists: src directory exists', function () {
     $adapter = createAdapter();
     expect($adapter->directoryExists('src'))->toBeTrue();

@@ -112,8 +112,7 @@ class GithubAdapter implements FilesystemAdapter, PublicUrlGenerator
 
     public function writeStream(string $path, $contents, Config $config): void
     {
-        // TODO: check if this actually works lol...
-        $this->write($path, $contents, $config);
+        $this->write($path, stream_get_contents($contents), $config);
     }
 
     public function read(string $path): string
@@ -145,8 +144,11 @@ class GithubAdapter implements FilesystemAdapter, PublicUrlGenerator
 
     public function readStream(string $path)
     {
-        // TODO: check if this actually works lol...
-        return $this->read($path);
+        $stream = fopen('php://memory', 'r+');
+        fwrite($stream, $this->read($path));
+        rewind($stream);
+
+        return $stream;
     }
 
     public function delete(string $path): void
