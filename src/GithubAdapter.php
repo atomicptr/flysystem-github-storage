@@ -40,15 +40,15 @@ class GithubAdapter implements FilesystemAdapter, PublicUrlGenerator
         protected ?string $branch = null,
         protected ?Client $githubClient = null,
         protected ?Committer $committer = null,
-        string $prefix = '',
+        protected string $prefix = '',
     ) {
-        $this->githubClient ??= new Client();
+        $this->githubClient ??= new Client;
         $this->committer ??= new Committer(
             'github-actions[bot]',
             'github-actions[bot]@users.noreply.github.com',
         );
         $this->prefixer = new PathPrefixer($prefix, DIRECTORY_SEPARATOR);
-        $this->mimeTypeDetector = new ExtensionMimeTypeDetector();
+        $this->mimeTypeDetector = new ExtensionMimeTypeDetector;
 
         $this->credentials ??= Credentials::public();
         $this->credentials->authenticate($this->githubClient);
@@ -62,7 +62,7 @@ class GithubAdapter implements FilesystemAdapter, PublicUrlGenerator
     public function fileExists(string $path): bool
     {
         try {
-            return $this->contents()->exists($this->username, $this->repository, $this->prefixer->prefixPath($path));
+            return $this->contents()->exists($this->username, $this->repository, $this->prefixPath($path));
         } catch (Throwable $e) {
             throw UnableToCheckExistence::forLocation($path, $e);
         }
@@ -71,7 +71,7 @@ class GithubAdapter implements FilesystemAdapter, PublicUrlGenerator
     public function write(string $path, string $contents, Config $config): void
     {
         try {
-            $prefixedPath = $this->prefixer->prefixPath($path);
+            $prefixedPath = $this->prefixPath($path);
 
             if (! $this->fileExists($prefixedPath)) {
                 $this->contents()->create(
@@ -120,7 +120,7 @@ class GithubAdapter implements FilesystemAdapter, PublicUrlGenerator
             $fileInfo = $this->contents()->show(
                 $this->username,
                 $this->repository,
-                $this->prefixer->prefixPath($path),
+                $this->prefixPath($path),
                 $this->branch,
             );
 
@@ -153,7 +153,7 @@ class GithubAdapter implements FilesystemAdapter, PublicUrlGenerator
     public function delete(string $path): void
     {
         try {
-            $prefixedPath = $this->prefixer->prefixPath($path);
+            $prefixedPath = $this->prefixPath($path);
 
             $oldFile = $this->contents()->show(
                 $this->username,
@@ -182,7 +182,7 @@ class GithubAdapter implements FilesystemAdapter, PublicUrlGenerator
             $fileInfo = $this->contents()->show(
                 $this->username,
                 $this->repository,
-                $this->prefixer->prefixPath($path),
+                $this->prefixPath($path),
                 $this->branch,
             );
 
@@ -200,7 +200,7 @@ class GithubAdapter implements FilesystemAdapter, PublicUrlGenerator
     public function deleteDirectory(string $path): void
     {
         try {
-            $files = $this->listContents($this->prefixer->prefixPath($path), false);
+            $files = $this->listContents($this->prefixPath($path), false);
 
             foreach ($files as $file) {
                 if ($file->type() === StorageAttributes::TYPE_DIRECTORY) {
@@ -221,7 +221,7 @@ class GithubAdapter implements FilesystemAdapter, PublicUrlGenerator
         $path = rtrim($path, '/').'/.gitkeep';
 
         try {
-            $this->write($this->prefixer->prefixPath($path), '', $config);
+            $this->write($this->prefixPath($path), '', $config);
         } catch (Throwable $e) {
             throw new UnableToCreateDirectory($path, $e);
         }
@@ -240,7 +240,7 @@ class GithubAdapter implements FilesystemAdapter, PublicUrlGenerator
 
     public function mimeType(string $path): FileAttributes
     {
-        $mimeType = $this->mimeTypeDetector->detectMimeTypeFromPath($this->prefixer->prefixPath($path));
+        $mimeType = $this->mimeTypeDetector->detectMimeTypeFromPath($this->prefixPath($path));
 
         if ($mimeType === null) {
             throw UnableToRetrieveMetadata::mimeType($path);
@@ -257,7 +257,7 @@ class GithubAdapter implements FilesystemAdapter, PublicUrlGenerator
                 $this->repository,
                 [
                     'sha' => $this->branch,
-                    'path' => $this->prefixer->prefixPath($path),
+                    'path' => $this->prefixPath($path),
                 ]
             );
 
@@ -287,7 +287,7 @@ class GithubAdapter implements FilesystemAdapter, PublicUrlGenerator
             $fileInfo = $this->contents()->show(
                 $this->username,
                 $this->repository,
-                $this->prefixer->prefixPath($path),
+                $this->prefixPath($path),
                 $this->branch,
             );
 
@@ -309,7 +309,7 @@ class GithubAdapter implements FilesystemAdapter, PublicUrlGenerator
             $fileInfo = $this->contents()->show(
                 $this->username,
                 $this->repository,
-                $this->prefixer->prefixPath($path),
+                $this->prefixPath($path),
                 $this->branch,
             );
 
@@ -325,7 +325,7 @@ class GithubAdapter implements FilesystemAdapter, PublicUrlGenerator
                 $isDirectory = $item['type'] === 'dir';
 
                 if ($isDirectory) {
-                    yield new DirectoryAttributes($item['path'], null, null);
+                    yield new DirectoryAttributes($this->prefixPath($item['path']), null, null);
 
                     if (! $deep) {
                         continue;
@@ -384,7 +384,7 @@ class GithubAdapter implements FilesystemAdapter, PublicUrlGenerator
      */
     public function publicUrl(string $path, Config $config): string
     {
-        $prefixedPath = $this->prefixer->prefixPath($path);
+        $prefixedPath = $this->prefixPath($path);
         $cdn = $config->get('publicUrlCdn', PublicUrlCdn::JsDelivr);
 
         switch ($cdn) {
@@ -403,12 +403,21 @@ class GithubAdapter implements FilesystemAdapter, PublicUrlGenerator
         }
     }
 
+    protected function prefixPath(string $path): string
+    {
+        if (empty($path)) {
+            return $this->prefix;
+        }
+
+        return $this->prefixer->prefixPath($this->prefixer->stripPrefix($path));
+    }
+
     /**
      * Laravel checks if the adapter has a "getUrl" method and calls that instead of using publicUrl, so we implement
      * this here directly instead :)
      */
     public function getUrl($path): string
     {
-        return $this->publicUrl($path, new Config());
+        return $this->publicUrl($path, new Config);
     }
 }

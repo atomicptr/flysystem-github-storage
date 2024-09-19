@@ -6,7 +6,7 @@ use Atomicptr\FlysystemGithub\Tests\TestCase;
 
 uses(TestCase::class)->in('Feature');
 
-function createAdapter(): GithubAdapter
+function createAdapter(string $prefix = ''): GithubAdapter
 {
     $token = getenv('GITHUB_TOKEN') ? Credentials::fromToken(getenv('GITHUB_TOKEN')) : null;
 
@@ -15,5 +15,6 @@ function createAdapter(): GithubAdapter
         'demo-storage',
         credentials: $token,
         branch: 'master',
+        prefix: $prefix,
     );
 }

@@ -40,12 +40,12 @@ test('write/delete: create file src/test.rs, read it and delete it again', funct
         $adapter->delete('src/test.rs');
     }
 
-    $adapter->write('src/test.rs', 'This is a test', new Config());
+    $adapter->write('src/test.rs', 'This is a test', new Config);
     $data = $adapter->read('src/test.rs');
     expect($data)->toBe('This is a test');
 
     // test if updates work
-    $adapter->write('src/test.rs', 'This is a new test', new Config());
+    $adapter->write('src/test.rs', 'This is a new test', new Config);
     $data = $adapter->read('src/test.rs');
     expect($data)->toBe('This is a new test');
 
@@ -65,7 +65,7 @@ test('writeStream/readStream: create a file using streams and read it', function
     $stream = fopen('php://memory', 'r+');
     fwrite($stream, $string);
     rewind($stream);
-    $adapter->writeStream('stream', $stream, new Config());
+    $adapter->writeStream('stream', $stream, new Config);
     fclose($stream);
 
     $data = $adapter->read('stream');
@@ -125,13 +125,13 @@ test('createDirectory/deleteDirectory: create and delete secret directory', func
         $adapter->deleteDirectory('secret');
     }
 
-    $adapter->createDirectory('secret', new Config());
+    $adapter->createDirectory('secret', new Config);
     expect($adapter->directoryExists('secret'))->toBeTrue();
 
-    $adapter->createDirectory('secret/inner-chamber', new Config());
+    $adapter->createDirectory('secret/inner-chamber', new Config);
     expect($adapter->directoryExists('secret/inner-chamber'))->toBeTrue();
 
-    $adapter->write('secret/inner-chamber/chamber', 'This is a test', new Config());
+    $adapter->write('secret/inner-chamber/chamber', 'This is a test', new Config);
 
     $adapter->deleteDirectory('secret');
     expect($adapter->directoryExists('secret'))->toBeFalse();
@@ -149,10 +149,10 @@ test('fileSize: for src/main.rs is exactly 52', function () {
 
 test('publicUrl: creates a jsdelivr url', function () {
     $adapter = createAdapter();
-    $url = $adapter->publicUrl('src/main.rs', new Config());
+    $url = $adapter->publicUrl('src/main.rs', new Config);
     expect($url)->toBe('https://cdn.jsdelivr.net/gh/atomicptr/demo-storage@master/src/main.rs');
 
-    $client = new \GuzzleHttp\Client();
+    $client = new \GuzzleHttp\Client;
     $response = $client->head($url);
     expect($response->getStatusCode())->toBe(200);
 });
@@ -162,7 +162,7 @@ test('publicUrl: creates a github cdn url', function () {
     $url = $adapter->publicUrl('src/main.rs', new Config(['publicUrlCdn' => PublicUrlCdn::GithubRaw]));
     expect($url)->toBe('https://raw.githubusercontent.com/atomicptr/demo-storage/master/src/main.rs');
 
-    $client = new \GuzzleHttp\Client();
+    $client = new \GuzzleHttp\Client;
     $response = $client->head($url);
     expect($response->getStatusCode())->toBe(200);
 });
@@ -174,12 +174,12 @@ test('move: can move wrong_path.rs to src/wrong_path.rs', function () {
         $adapter->delete('src/wrong_path.rs');
     }
 
-    $adapter->write('wrong_path.rs', 'This is a test', new Config());
+    $adapter->write('wrong_path.rs', 'This is a test', new Config);
 
     expect($adapter->fileExists('wrong_path.rs'))->toBeTrue()
         ->and($adapter->fileExists('src/wrong_path.rs'))->toBeFalse();
 
-    $adapter->move('wrong_path.rs', 'src/wrong_path.rs', new Config());
+    $adapter->move('wrong_path.rs', 'src/wrong_path.rs', new Config);
 
     expect($adapter->fileExists('wrong_path.rs'))->toBeFalse()
         ->and($adapter->fileExists('src/wrong_path.rs'))->toBeTrue();
@@ -194,7 +194,7 @@ test('copy: copy file src/main.rs to src/main2.rs', function () {
         $adapter->delete('src/main2.rs');
     }
 
-    $adapter->copy('src/main.rs', 'src/main2.rs', new Config());
+    $adapter->copy('src/main.rs', 'src/main2.rs', new Config);
 
     expect($adapter->fileExists('src/main2.rs'))->toBeTrue();
 
@@ -203,4 +203,17 @@ test('copy: copy file src/main.rs to src/main2.rs', function () {
     expect($dataMain2)->toBe($dataMain);
 
     $adapter->delete('src/main2.rs');
+});
+
+test('listContents: lists contents of repo with prefix', function () {
+    $adapter = createAdapter(prefix: 'src');
+
+    $paths = [];
+
+    foreach ($adapter->listContents('', true) as $file) {
+        $paths[] = $file->path();
+    }
+
+    expect($paths)->toHaveLength(1);
+    expect($paths[0])->toBe('src/main.rs');
 });

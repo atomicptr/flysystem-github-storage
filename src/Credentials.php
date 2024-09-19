@@ -11,8 +11,7 @@ final readonly class Credentials
         private string $login,
         private ?string $password,
         private ?string $authMethod,
-    ) {
-    }
+    ) {}
 
     public function authenticate(Client $client): void
     {
